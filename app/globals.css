@@ -16,6 +16,10 @@
     --color-sidebar-foreground: var(--sidebar-foreground);
     --color-sidebar: var(--sidebar);
     --color-chart-5: var(--chart-5);
+    --color-brand: var(--brand);
+    --color-brand-foreground: var(--brand-foreground);
+    --color-success: var(--success);
+    --color-warning: var(--warning);
     --color-chart-4: var(--chart-4);
     --color-chart-3: var(--chart-3);
     --color-chart-2: var(--chart-2);
@@ -48,7 +52,7 @@
 }
 
 :root {
-    --background: oklch(1 0 0);
+    --background: oklch(0.985 0.002 260);
     --foreground: oklch(0.145 0 0);
     --card: oklch(1 0 0);
     --card-foreground: oklch(0.145 0 0);
@@ -66,12 +70,16 @@
     --border: oklch(0.922 0 0);
     --input: oklch(0.922 0 0);
     --ring: oklch(0.708 0 0);
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
-    --radius: 0.625rem;
+    --chart-1: #2a78d6;
+    --chart-2: #eb6834;
+    --chart-3: #1baf7a;
+    --chart-4: #eda100;
+    --chart-5: #e87ba4;
+    --brand: oklch(0.64 0.21 35);
+    --brand-foreground: oklch(0.99 0 0);
+    --success: oklch(0.6 0.15 155);
+    --warning: oklch(0.75 0.16 70);
+    --radius: 0.75rem;
     --sidebar: oklch(0.985 0 0);
     --sidebar-foreground: oklch(0.145 0 0);
     --sidebar-primary: oklch(0.205 0 0);
@@ -83,7 +91,7 @@
 }
 
 .dark {
-    --background: oklch(0.145 0 0);
+    --background: oklch(0.13 0 0);
     --foreground: oklch(0.985 0 0);
     --card: oklch(0.205 0 0);
     --card-foreground: oklch(0.985 0 0);
@@ -101,14 +109,18 @@
     --border: oklch(1 0 0 / 10%);
     --input: oklch(1 0 0 / 15%);
     --ring: oklch(0.556 0 0);
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
-    --sidebar: oklch(0.205 0 0);
+    --chart-1: #3987e5;
+    --chart-2: #d95926;
+    --chart-3: #199e70;
+    --chart-4: #c98500;
+    --chart-5: #d55181;
+    --brand: oklch(0.68 0.19 38);
+    --brand-foreground: oklch(0.15 0 0);
+    --success: oklch(0.7 0.15 155);
+    --warning: oklch(0.8 0.15 75);
+    --sidebar: oklch(0.175 0 0);
     --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.488 0.243 264.376);
+    --sidebar-primary: oklch(0.68 0.19 38);
     --sidebar-primary-foreground: oklch(0.985 0 0);
     --sidebar-accent: oklch(0.269 0 0);
     --sidebar-accent-foreground: oklch(0.985 0 0);
@@ -126,4 +138,114 @@
   html {
     @apply font-sans;
     }
+}
+/* ---------- Theme switch: circular reveal (View Transitions API) ---------- */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-new(root) {
+  z-index: 2;
+}
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+/* ---------- Small utilities ---------- */
+@layer utilities {
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, var(--border) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--border) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Grows a small control's touch area without changing its look (WCAG 2.5.8, ~44px tall). */
+@utility hit-area {
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: -12px -3px;
+  }
+}
+
+/* ---------- Real-device (iOS / Android) polish ---------- */
+/* Safe-area insets: the iPhone home indicator, notch and rounded corners.
+   Needs viewportFit: "cover" (app/layout.tsx). Defaults to 0 everywhere else. */
+:root {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+}
+
+html {
+  -webkit-tap-highlight-color: transparent; /* no grey flash on tap */
+  -webkit-text-size-adjust: 100%; /* no font inflation in landscape */
+}
+
+/* Kills the double-tap-to-zoom delay on controls. */
+a,
+button,
+input,
+select,
+textarea,
+label,
+[role="button"] {
+  touch-action: manipulation;
+}
+
+/* iOS Safari zooms the page when focusing a field under 16px. Unlayered, so it beats text-sm. */
+@media (pointer: coarse) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+
+/* Main content: clear the notch (landscape) and the home indicator. */
+[data-slot="sidebar-inset"] {
+  padding-right: var(--safe-right);
+  padding-bottom: var(--safe-bottom);
+}
+@media (max-width: 767px) {
+  [data-slot="sidebar-inset"] {
+    padding-left: var(--safe-left);
+  }
+}
+
+/* Desktop/landscape sidebar: keep its contents out from under the notch. */
+[data-slot="sidebar-container"][data-side="left"] {
+  padding-left: max(0.5rem, var(--safe-left));
+  padding-bottom: max(0.5rem, var(--safe-bottom));
+}
+
+/* Side panels reach the screen edges. Panels with a footer pad the footer itself (see SheetFooter);
+   the rest pad their end so the last line isn't under the home indicator.
+   The phone sidebar is a sheet too, but tagged data-slot="sidebar". */
+[data-slot="sheet-content"]:not(:has([data-slot="sheet-footer"])),
+[data-slot="sidebar"][data-mobile="true"] {
+  padding-bottom: var(--safe-bottom);
+}
+:is([data-slot="sheet-content"], [data-slot="sidebar"][data-mobile="true"])[data-side="left"] {
+  padding-left: var(--safe-left);
+}
+:is([data-slot="sheet-content"], [data-slot="sidebar"][data-mobile="true"])[data-side="right"] {
+  padding-right: var(--safe-right);
 }
