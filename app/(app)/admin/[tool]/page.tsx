@@ -18,18 +18,29 @@ const BUILT = new Set([
   "pos-menu",
   "item-options",
   "delivery",
+  "procurement",
 ])
 
 export function generateStaticParams() {
-  return ALL_TOOLS.filter((t) => !BUILT.has(t.slug)).map((t) => ({ tool: t.slug }))
+  return ALL_TOOLS.filter((t) => !BUILT.has(t.slug)).map((t) => ({
+    tool: t.slug,
+  }))
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ tool: string }> }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ tool: string }>
+}): Promise<Metadata> {
   const { tool } = await params
   return { title: findTool(tool)?.title ?? "Admin" }
 }
 
-export default async function ToolPage({ params }: { params: Promise<{ tool: string }> }) {
+export default async function ToolPage({
+  params,
+}: {
+  params: Promise<{ tool: string }>
+}) {
   const { tool } = await params
   if (!findTool(tool)) notFound()
   return <ComingSoon slug={tool} />
